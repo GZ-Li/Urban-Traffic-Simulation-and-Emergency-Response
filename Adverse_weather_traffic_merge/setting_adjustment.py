@@ -157,6 +157,7 @@ def calculate_acc(mapping_dict, road_df, test_dict_normal, test_dict_rain):
 net = readNet(simulation_config['net_path'])
 road_df = load_road_data(simulation_config['road_data_csv'])
 df, mapping_dict = match_edges_to_roads(net, road_df)
+print(mapping_dict)
 recall_factor = (2/3)
 with open("simulation_results\\rain_average_speeds_scale.json", 'r') as fcc_file:
     rain_dict = json.load(fcc_file)

@@ -3,7 +3,7 @@
 
     <input>
         <net-file value="E:\\Traffic_Simulation\\snowplow_routing\\net\\toy.net.xml"/>
-        <route-files value="E:\\Traffic_Simulation\\snowplow_routing\\rou\\toy.rou.xml"/>
+        <route-files value="E:\\Traffic_Simulation\\snowplow_routing\\rou\\dynamic_toy.rou.xml"/>
        <!-- <additional-files value="e1.add.xml"/> -->
    <time>
         <!-- 设置开始时间（默认为0） -->
