@@ -1,0 +1,34 @@
+[
+  {
+    "accident_idx": 1,
+    "hospital_idx": 4,
+    "time": 430,
+    "ambulance_id": 105,
+    "accident_spot": "200040849",
+    "hospital_name": "医院5"
+  },
+  {
+    "accident_idx": 0,
+    "hospital_idx": 3,
+    "time": 460,
+    "ambulance_id": 75,
+    "accident_spot": "200042649",
+    "hospital_name": "医院4"
+  },
+  {
+    "accident_idx": 2,
+    "hospital_idx": 3,
+    "time": 180,
+    "ambulance_id": 77,
+    "accident_spot": "200063134",
+    "hospital_name": "医院4"
+  },
+  {
+    "accident_idx": 3,
+    "hospital_idx": 3,
+    "time": 240,
+    "ambulance_id": 90,
+    "accident_spot": "200040901",
+    "hospital_name": "医院4"
+  }
+]

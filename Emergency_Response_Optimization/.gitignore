@@ -1,0 +1,70 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# 环境
+.env
+.venv
+env/
+venv/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 操作系统
+.DS_Store
+Thumbs.db
+
+# 项目特定
+results/exp_res/*.csv
+results/*.xml
+results/*.png
+results/*.jpg
+
+# SUMO输出文件
+*.xml.gz
+*tripinfo.xml
+*summary.xml
+*emissions.xml
+*fcd.xml
+
+# 临时文件
+*.tmp
+*.log
+*.bak
+
+# 数据文件（大文件不上传）
+data/*.net.xml
+data/*.rou.xml
+data/*.sumocfg
+
+# 但保留示例和必要文件
+!data/Hospital_Location.csv
+!data/cases.txt
+!data/README.md
