@@ -1,0 +1,89 @@
+{
+  "project_name": "snow_plowing_strategy_comparison",
+  "version": "1.0",
+  "date": "2026-01-31",
+  
+  "network": {
+    "net_file": "E:\\Traffic_Simulation\\snow_plow_project\\net\\core_withshape_with_light_changing.net.xml",
+    "route_file": "E:\\Traffic_Simulation\\Adverse_weather_traffic\\rou\\mapcore_500m_core_withshape_with_light_test_normal_0.1.rou.xml"
+  },
+  
+  "sumo_config": {
+    "config_file": "E:\\Traffic_Simulation\\Adverse_weather_traffic\\Core_500m_test_0.1.sumocfg",
+    "simulation_steps": 200,
+    "evaluation_hours": [0, 1, 2, 3, 4, 5]
+  },
+  
+  "road_parameters": {
+    "cleaned": {
+      "max_speed": 33
+    },
+    "unclean": {
+      "max_speed": 4
+    }
+  },
+  
+  "snowplow_parameters": {
+    "num_trucks": 5,
+    "speed_clean": 3,
+    "speed_pass": 10,
+    "max_time_minutes": 300,
+    "unified_start_edge": "200001452"
+  },
+  
+  "regions": {
+    "region1": {
+      "name": "东南区",
+      "bounds": {"min_x": 7500, "min_y": -36.63, "max_x": 12469.37, "max_y": 2000},
+      "color": "#FF0000"
+    },
+    "region2": {
+      "name": "东北区",
+      "bounds": {"min_x": 7500, "min_y": 2000, "max_x": 12611.07, "max_y": 4702.42},
+      "color": "#0000FF"
+    },
+    "region3": {
+      "name": "西北区",
+      "bounds": {"min_x": -355.68, "min_y": 2500, "max_x": 4785.48, "max_y": 7506.39},
+      "color": "#00FF00"
+    },
+    "region4": {
+      "name": "中心区",
+      "bounds": {"min_x": -153.18, "min_y": -244.72, "max_x": 5500, "max_y": 2500},
+      "color": "#FFA500"
+    },
+    "region5": {
+      "name": "中北区",
+      "bounds": {"min_x": 4785.48, "min_y": 2500, "max_x": 9500, "max_y": 7506.39},
+      "color": "#9400D3"
+    }
+  },
+  
+  "strategies": {
+    "greedy": {
+      "name": "贪心策略",
+      "description": "优先清扫交通流量高的道路",
+      "enabled": true
+    },
+    "random": {
+      "name": "随机策略",
+      "description": "随机选择道路进行清扫",
+      "enabled": true
+    }
+  },
+  
+  "visualization": {
+    "gif_fps": 1,
+    "time_interval_minutes": 30,
+    "figure_size": [16, 14],
+    "dpi": 100
+  },
+  
+  "output": {
+    "base_dir": "E:\\Traffic_Simulation\\snow_plowing_20260131\\results",
+    "save_gif": true,
+    "save_png_frames": true,
+    "save_json": true,
+    "save_comparison": true
+  }
+}
