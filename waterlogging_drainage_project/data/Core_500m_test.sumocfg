@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
+
+    <input>
+        <net-file value="network/new_add_light.net.xml"/>
+        <route-files value="routes/mapall_addline_expand.rou.xml"/>
+    </input>
+
+    <time>
+        <!-- Set start time (default is 0) -->
+        <begin value="0"/>
+        <!-- Set end time (total runtime = end - begin) -->
+        <end value="3600"/> <!-- 3600 seconds = 1 hour -->
+    </time>
+
+</configuration>

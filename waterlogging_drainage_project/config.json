@@ -1,0 +1,52 @@
+{
+  "project_name": "waterlogging_drainage_evaluation",
+  "version": "1.0",
+  "date": "2026-02-01",
+  
+  "network": {
+    "net_file": "data/network/new_add_light.net.xml",
+    "route_file": "data/routes/mapall_addline_expand.rou.xml"
+  },
+  
+  "sumo_config": {
+    "config_file": "data/Core_500m_test.sumocfg",
+    "simulation_steps": 200,
+    "evaluation_delays": [30, 60, 120],
+    "measurement_window": 200
+  },
+  
+  "waterlogging_points": {
+    "g1": ["200040454", "200041869", "200041962", "200041963", "200041988", "200041989", "200044213", "200044495"],
+    "g2": ["200041609", "200041610", "200041615", "200041616", "200044412", "200044413", "200044418", "200044419"],
+    "g3": ["200041781", "200042162", "200043283", "200043985"],
+    "g4": ["200001398", "200001409", "200015019", "200015020"],
+    "g5": ["200060649", "200060651", "200060659", "200060662", "200060699", "200061350", "200061430", "200061433"],
+    "g6": ["200070146", "200071249", "200071251", "200071258", "200071427", "200073096", "200073116", "200073995"],
+    "g7": ["200040833", "200040834", "200041611", "200044414"],
+    "g8": ["200040838", "200040847", "200040850", "200040950", "200040964", "200041608", "200041776", "200043010"],
+    "g9": ["200001259", "200001286", "200014459", "200014460"]
+  },
+  
+  "drainage_parameters": {
+    "max_clean_at_once": 3,
+    "steps_to_clean_one": 600,
+    "flooded_speed": 1.5,
+    "normal_speed": 15,
+    "start_step": 10
+  },
+  
+  "strategies": {
+    "best": {
+      "enabled": true,
+      "description": "Sort by traffic flow (high to low)"
+    },
+    "worst": {
+      "enabled": true,
+      "description": "Sort by traffic flow (low to high)"
+    }
+  },
+  
+  "output": {
+    "base_dir": "results"
+  }
+}
