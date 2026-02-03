@@ -1,1 +1,0 @@
-**We align the simulation environment with the actual world at 18:00.**
