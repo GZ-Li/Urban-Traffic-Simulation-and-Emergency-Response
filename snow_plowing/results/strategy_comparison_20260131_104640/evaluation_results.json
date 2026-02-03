@@ -1,0 +1,102 @@
+{
+  "strateg5": {
+    "0h": {
+      "time_hours": 0,
+      "time_minutes": 0,
+      "cleaned_edges_count": 0,
+      "average_speed_ms": 2.6829199914230646,
+      "average_speed_kmh": 9.658511969123033,
+      "total_speed_samples": 1237552
+    },
+    "1h": {
+      "time_hours": 1,
+      "time_minutes": 60,
+      "cleaned_edges_count": 131,
+      "average_speed_ms": 2.7815093045594,
+      "average_speed_kmh": 10.01343349641384,
+      "total_speed_samples": 1240460
+    },
+    "2h": {
+      "time_hours": 2,
+      "time_minutes": 120,
+      "cleaned_edges_count": 230,
+      "average_speed_ms": 2.950619981358832,
+      "average_speed_kmh": 10.622231932891795,
+      "total_speed_samples": 1237620
+    },
+    "3h": {
+      "time_hours": 3,
+      "time_minutes": 180,
+      "cleaned_edges_count": 328,
+      "average_speed_ms": 3.1322549113382294,
+      "average_speed_kmh": 11.276117680817626,
+      "total_speed_samples": 1237876
+    },
+    "4h": {
+      "time_hours": 4,
+      "time_minutes": 240,
+      "cleaned_edges_count": 483,
+      "average_speed_ms": 3.2561119839447756,
+      "average_speed_kmh": 11.722003142201192,
+      "total_speed_samples": 1238810
+    },
+    "5h": {
+      "time_hours": 5,
+      "time_minutes": 300,
+      "cleaned_edges_count": 596,
+      "average_speed_ms": 3.3232766847340502,
+      "average_speed_kmh": 11.963796065042581,
+      "total_speed_samples": 1241946
+    }
+  },
+  "random": {
+    "0h": {
+      "time_hours": 0,
+      "time_minutes": 0,
+      "cleaned_edges_count": 0,
+      "average_speed_ms": 2.6829199914230646,
+      "average_speed_kmh": 9.658511969123033,
+      "total_speed_samples": 1237552
+    },
+    "1h": {
+      "time_hours": 1,
+      "time_minutes": 60,
+      "cleaned_edges_count": 93,
+      "average_speed_ms": 2.731645013797913,
+      "average_speed_kmh": 9.833922049672486,
+      "total_speed_samples": 1240484
+    },
+    "2h": {
+      "time_hours": 2,
+      "time_minutes": 120,
+      "cleaned_edges_count": 216,
+      "average_speed_ms": 2.8324658978045045,
+      "average_speed_kmh": 10.196877232096217,
+      "total_speed_samples": 1235512
+    },
+    "3h": {
+      "time_hours": 3,
+      "time_minutes": 180,
+      "cleaned_edges_count": 328,
+      "average_speed_ms": 2.9387474666305144,
+      "average_speed_kmh": 10.579490879869851,
+      "total_speed_samples": 1239209
+    },
+    "4h": {
+      "time_hours": 4,
+      "time_minutes": 240,
+      "cleaned_edges_count": 441,
+      "average_speed_ms": 3.02084590179959,
+      "average_speed_kmh": 10.875045246478525,
+      "total_speed_samples": 1242325
+    },
+    "5h": {
+      "time_hours": 5,
+      "time_minutes": 300,
+      "cleaned_edges_count": 582,
+      "average_speed_ms": 3.2219104083322976,
+      "average_speed_kmh": 11.598877469996271,
+      "total_speed_samples": 1240425
+    }
+  }
+}
