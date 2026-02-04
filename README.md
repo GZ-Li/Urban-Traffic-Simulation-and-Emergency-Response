@@ -1,196 +1,251 @@
-# Urban Traffic Simulation and Emergency Response
+# 城市交通仿真与应急响应
 
-城市交通仿真与应急响应优化系统集合，包含多个基于 SUMO 的交通模拟与优化项目。
-
-## 项目概述
-
-本仓库包含七个独立的交通仿真与优化项目，涵盖紧急响应、公交优化、路径规划、恶劣天气应对等多个场景。所有项目基于 SUMO (Simulation of Urban MObility) 交通仿真平台开发。
+基于 SUMO 的城市交通模拟与优化项目集合
 
 ## 项目列表
 
-### 1. Emergency Response Optimization (应急响应优化)
+### 1. 城市交通高峰模拟
+**路径**: `Peak_Hour_Traffic_Simulation/`
+
+（项目开发中）
+
+---
+
+### 2. 高峰期道路资源优化
+**路径**: `Traffic_Optimization/`
+
+（项目开发中）
+
+---
+
+### 3. 公交车利用率提升
+**路径**: `Bus_Utility_Optimization/`
+
+（项目开发中）
+
+---
+
+### 4. 内涝排水策略评估
+**路径**: `waterlogging_drainage_project/`
+
+城市内涝情景下的排水策略优化与交通疏导系统，评估不同排水方案对交通的影响。
+
+#### 核心功能
+- 内涝情景建模：模拟不同降雨强度下的道路积水
+- 排水策略生成：生成最优和最差排水顺序
+- 交通仿真评估：使用 SUMO 模拟不同排水策略下的交通状况
+- 策略对比分析：在多个时间延迟点（30s, 60s, 120s）评估策略效果
+
+#### 评估指标
+- **通过量 (Cumulative Throughput)**: 驶离积水区域的累计车辆数
+- **队列长度 (Queue Length)**: 积水区域内滞留的平均车辆数
+- **平均速度 (Average Speed)**: 积水区域内车辆的平均行驶速度
+
+#### 项目结构
+```
+waterlogging_drainage_project/
+├── config.json                          # 配置文件
+├── data/                                # SUMO 路网与路由文件
+├── src/                                 
+│   ├── generate_strategy.py            # 策略生成
+│   ├── evaluate_strategy.py            # SUMO 仿真评估
+│   ├── compare_strategies.py           # 策略对比
+│   └── visualize_waterlogging.py       # 可视化
+├── waterlogging_point_identification/  # 内涝点数据
+└── results/                             # 输出目录
+```
+
+#### 快速开始
+```bash
+cd waterlogging_drainage_project
+python src/main.py
+```
+
+#### 依赖
+- Python 3.8+
+- SUMO 1.15+
+- pandas, numpy, matplotlib
+
+---
+
+### 5. 除雪作业优化
+**路径**: `snow_plowing/`
+
+冬季道路除雪作业路径规划与效果评估系统，优化除雪车辆调度。
+
+#### 核心功能
+- **策略生成**: 贪心策略（优先清扫高流量道路）vs 随机策略
+- **路径规划**: 使用 NetworkX 和 Dijkstra 算法计算最短路径
+- **区域分配**: 将道路按坐标分配到不同区域，每个扫雪车负责一个区域
+- **仿真评估**: 基于 SUMO 路网进行除雪效果评估
+
+#### 策略对比
+| 策略 | 描述 |
+|------|------|
+| 贪心策略 | 按交通流量降序排序，优先清扫高流量道路 |
+| 随机策略 | 随机打乱道路顺序进行清扫 |
+
+#### 配置参数
+- `num_trucks`: 扫雪车数量（必须与 `num_regions` 相同）
+- `speed_clean`: 清扫速度（米/秒）
+- `speed_pass`: 通行速度（米/秒）
+- `max_time_minutes`: 最大清扫时间（分钟）
+
+#### 项目结构
+```
+snow_plowing/
+├── config.json                 # 主配置文件
+├── regions.json                # 区域边界配置
+├── generate_strategies.py      # 策略生成器
+├── evaluate_strategies.py      # SUMO 评估器
+├── strategies/                 # 策略算法模块
+│   ├── greedy_strategy.py     # 贪心策略
+│   └── random_strategy.py     # 随机策略
+└── results/                    # 输出目录
+```
+
+#### 快速开始
+```bash
+cd snow_plowing
+python generate_strategies.py
+python evaluate_strategies.py
+```
+
+---
+
+### 6. 单点事故应急响应
 **路径**: `Emergency_Response_Optimization/`
 
-基于遗传算法的医院-事故点最优路径规划系统，用于紧急救援场景下的路径优化。
+基于匈牙利算法的交通事故应急响应优化系统，为多个医院和事故点分配最优救护车路径。
 
-**核心功能**:
-- 使用遗传算法优化多个事故点到医院的救援路径
-- 考虑实时交通状况（拥堵、速度限制等）
-- 支持多目标优化（响应时间、路径长度、公平性）
-- 提供可视化分析工具
+#### 核心功能
+- **路径规划**: 使用 Dijkstra 算法计算救护车从医院到事故点的最优路径
+- **优化分配**: 将问题建模为任务分配问题 (Min-Max Assignment)，最小化最大响应时间
+- **算法对比**: 对比最优算法与贪心算法的性能差异
+- **可视化**: 生成分配方案对比图和路网地图
+- **SUMO 仿真**: 基于 SUMO 平台进行实际验证
 
-**关键文件**:
-- `src/genetic_optimizer.py`: 遗传算法核心实现
-- `src/emergency_response.py`: 应急响应主程序
-- `run_single_experiment.py`: 单次实验快速启动工具
+#### 算法优势
+相比贪心算法，最优算法可以：
+- 减少最大响应时间
+- 实现更均衡的医院资源利用
+- 保证全局最优解
 
-**快速开始**:
+#### 项目结构
+```
+Emergency_Response_Optimization/
+├── src/
+│   ├── path_planning.py            # 路径规划（Dijkstra）
+│   ├── optimization.py             # 优化算法（匈牙利算法）
+│   ├── visualization.py            # 可视化
+│   └── sumo_simulation.py          # SUMO 仿真接口
+├── data/
+│   ├── Hospital_Location.csv       # 医院位置
+│   ├── cases.txt                   # 测试案例
+│   └── new_add_light.net.xml       # 路网文件
+├── run_single_experiment.py        # 单次实验工具
+└── results/                        # 实验结果
+```
+
+#### 快速开始
 ```bash
 cd Emergency_Response_Optimization
 python run_single_experiment.py
 ```
 
----
-
-### 2. Bus Utility Optimization (公交效用优化)
-**路径**: `Bus_Utility_Optimization/`
-
-公交线路与站点布局优化系统，通过模拟评估不同公交配置方案的效用。
-
-**核心功能**:
-- 公交线路规划与优化
-- 站点布局效用评估
-- 乘客出行时间分析
-- 多方案对比与可视化
-
-**关键文件**:
-- `src/bus_optimizer.py`: 公交优化算法
-- `src/evaluate_utility.py`: 效用评估模块
-- `config/`: 公交线路配置文件
-
-**性能指标**:
-- 平均等车时间: < 5分钟
-- 线路覆盖率: > 85%
-- 乘客满意度: 显著提升
+#### 依赖
+- Python 3.8+
+- numpy, pandas, scipy
+- networkx, matplotlib
+- sumolib, traci
 
 ---
 
-### 3. Peak Hour Traffic Simulation (高峰时段交通仿真)
-**路径**: `Peak_Hour_Traffic_Simulation/`
-
-高峰时段交通流仿真与拥堵分析系统，用于评估交通控制策略效果。
-
-**核心功能**:
-- 早晚高峰时段交通流建模
-- 拥堵热点识别与分析
-- 信号灯配时优化
-- 交通流量预测
-
-**关键文件**:
-- `src/peak_hour_simulator.py`: 高峰仿真主程序
-- `src/congestion_analyzer.py`: 拥堵分析工具
-- `data/peak_traffic_patterns.csv`: 历史交通数据
-
-**应用场景**:
-- 城市交通规划
-- 信号灯优化
-- 交通流量预测
+### 7. 多点事故应急响应
+**路径**: （项目开发中）
 
 ---
 
-### 4. Traffic Optimization (交通优化)
-**路径**: `Traffic_Optimization/`
-
-综合交通优化系统，整合多种优化策略以改善整体交通效率。
-
-**核心功能**:
-- 多策略交通优化（信号灯、路径引导、车道管理）
-- 实时交通监控与调整
-- 优化效果评估与对比
-- 可扩展的优化框架
-
-**关键文件**:
-- `src/traffic_optimizer.py`: 综合优化器
-- `src/strategy_manager.py`: 策略管理模块
-- `config/optimization_config.yaml`: 优化参数配置
-
----
-
-### 5. Route Optimization (路径优化)
+### 8. 马拉松路线规划
 **路径**: `optim_route/`
 
-两阶段路径优化系统：第一阶段使用 OR-Tools 求解初始最优路径，第二阶段使用遗传算法考虑实时交通优化。
+基于 OR-Tools 和遗传算法的多约束路线规划系统，支持 OSM 和 SUMO Net 两种路网格式。
 
-**核心功能**:
-- **第一阶段**: OR-Tools CP-SAT求解器，优化目标为**最小化总距离**
-- **第二阶段**: 遗传算法结合实时交通数据，优化实际行驶时间
-- 支持多途径点路径规划
-- 动态交通考虑（拥堵、限速）
+#### 核心特性
+- **双算法优化**: OR-Tools 求解最优途经点顺序 + 遗传算法局部优化
+- **多路网格式支持**: OSM XML 和 SUMO .net.xml
+- **多约束优化**: 途经点约束、距离约束、拥堵系数约束
+- **评估指标**: 距离满足度、途经点满足度
 
-**关键文件**:
-- `src/route_planner.py`: 两阶段优化核心
-  - `solve_initial_route_ortools()`: OR-Tools距离优化 (lines 770-972)
-  - `optimize_with_genetic_algorithm()`: 遗传算法时间优化
-- `src/network_manager.py`: 路网管理与距离矩阵计算
+#### 优化流程
+1. **第一阶段 (OR-Tools)**: 
+   - 使用 CP-SAT 求解器
+   - 计算最优途经点访问顺序
+   - 优化目标：最小化总距离
+   
+2. **第二阶段 (遗传算法)**:
+   - 在 OR-Tools 解的基础上进行局部优化
+   - 考虑道路拥堵系数
+   - 优化目标：最小化实际行驶时间
 
-**优化标准**:
-- 第一阶段: 最小化途径点间总距离（使用 Dijkstra 算法计算距离矩阵）
-- 第二阶段: 最小化实际行驶时间（考虑实时交通状况）
+#### 支持的路网格式
+| 格式 | 说明 | 处理器 |
+|------|------|--------|
+| OSM XML | OpenStreetMap XML 格式 | OSMDataProcessor |
+| Net .net.xml | SUMO 路网格式 | NetDataProcessor |
 
-**快速开始**:
+#### 项目结构
+```
+optim_route/
+├── route_planner.py            # 主入口，路线规划核心
+├── run_wuhan_net.py            # 测试脚本
+├── utils.py                    # 数据处理与评估
+├── data/
+│   ├── wuhan.net.xml           # 大范围路网
+│   └── wuhan_core.net.xml      # 核心区域路网
+└── results/                    # 输出目录
+```
+
+#### 快速开始
 ```bash
 cd optim_route
-python src/route_planner.py
+
+# 使用 uv 安装依赖
+uv sync
+
+# 运行测试
+uv run python run_wuhan_net.py \
+    --net-file data/wuhan_core.net.xml \
+    --output-dir results \
+    --cases case3 \
+    --generations 200
 ```
+
+#### 依赖
+- Python 3.8+
+- ortools
+- networkx
+- numpy, pandas
 
 ---
 
-### 6. Snow Plowing Optimization (除雪作业优化)
-**路径**: `snow_plowing/`
+### 9. 定点赛事人流疏散
+**路径**: `concert_evacuation/`
 
-冬季道路除雪作业路径规划与效果评估系统，优化除雪车辆调度。
-
-**核心功能**:
-- 除雪车辆路径规划
-- 优先级道路识别（主干道、医院周边等）
-- 除雪效果实时评估
-- 多车辆协同调度
-
-**关键文件**:
-- `src/snow_plow_optimizer.py`: 除雪路径优化
-- `src/evaluate_snow_removal.py`: 除雪效果评估
-- `evaluate_baseline.py`: 基线对比工具
-
-**性能指标**:
-- 主干道清理时间: < 2小时
-- 覆盖率: 100%
-- 车辆利用率: 优化提升 30%
-
----
-
-### 7. Waterlogging Drainage Project (内涝排水项目)
-**路径**: `waterlogging_drainage_project/`
-
-城市内涝情景下的排水策略优化与交通疏导系统，评估不同排水方案的效果。
-
-**核心功能**:
-- 内涝情景建模（不同降雨强度、持续时间）
-- 排水策略效果评估（通过量、平均速度）
-- 交通疏导方案优化
-- 多批次独立仿真对比
-
-**关键指标说明**:
-- **通过量 (辆/200秒)**: 每200秒时间窗口内驶离积水区域的车辆数（独立测量）
-- **平均速度 (km/h)**: 积水区域内车辆的平均行驶速度（连续趋势）
-
-**关键文件**:
-- `src/evaluate_strategy.py`: 策略评估核心
-  - `run_sumo_with_drainage_state()`: 计算通过量和平均速度
-- `src/visualize_metrics.py`: 指标可视化（柱状图显示通过量，折线图显示速度）
-- `src/explain_metrics.py`: 详细指标说明文档
-
-**快速开始**:
-```bash
-cd waterlogging_drainage_project
-python run_pipeline.py
-```
-
-**可视化**:
-- 使用柱状图展示通过量（独立测量值，适合对比）
-- 使用折线图展示平均速度（连续趋势变化）
+（项目开发中）
 
 ---
 
 ## 技术栈
 
-- **SUMO 1.19+**: 交通仿真平台
+- **SUMO 1.15+**: 交通仿真平台
 - **Python 3.8+**: 主要开发语言
 - **TraCI**: Python-SUMO 接口
-- **OR-Tools**: 约束规划求解器（路径优化第一阶段）
-- **遗传算法**: 考虑实时交通的路径优化（路径优化第二阶段、应急响应）
+- **OR-Tools**: 约束规划求解器
 - **NetworkX**: 图算法库（Dijkstra 最短路径）
 - **Matplotlib**: 数据可视化
 - **NumPy/Pandas**: 数据处理
+- **Scipy**: 科学计算（匈牙利算法）
 
 ## 通用依赖安装
 
@@ -200,37 +255,5 @@ python run_pipeline.py
 # Linux: sudo apt-get install sumo sumo-tools sumo-doc
 
 # Python 依赖
-pip install traci sumolib numpy pandas matplotlib networkx ortools
+pip install traci sumolib numpy pandas matplotlib networkx ortools scipy
 ```
-
-## 性能对比
-
-| 项目 | 优化前指标 | 优化后指标 | 提升幅度 |
-|------|-----------|-----------|---------|
-| Emergency Response | 平均响应时间: 8.5分钟 | 平均响应时间: 5.2分钟 | -38.8% |
-| Bus Utility | 乘客等待时间: 12分钟 | 乘客等待时间: 4.8分钟 | -60% |
-| Snow Plowing | 清理时间: 3.5小时 | 清理时间: 2.4小时 | -31.4% |
-| Waterlogging Drainage | 通过量: 45辆/200s | 通过量: 78辆/200s | +73.3% |
-
-## 贡献指南
-
-欢迎贡献代码、报告问题或提出改进建议！
-
-1. Fork 本仓库
-2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 开启 Pull Request
-
-## 许可证
-
-本项目采用 MIT 许可证 - 详见各项目目录下的 LICENSE 文件
-
-## 联系方式
-
-- GitHub: [@GZ-Li](https://github.com/GZ-Li)
-- 项目主页: [Urban-Traffic-Simulation-and-Emergency-Response](https://github.com/GZ-Li/Urban-Traffic-Simulation-and-Emergency-Response)
-
-## 致谢
-
-感谢 SUMO 开发团队提供的优秀交通仿真平台，以及开源社区的各类工具库支持。
