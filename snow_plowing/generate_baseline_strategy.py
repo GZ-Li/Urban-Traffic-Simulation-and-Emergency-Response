@@ -7,9 +7,11 @@ import xml.etree.ElementTree as ET
 import json
 from pathlib import Path
 
-# 配置
-NET_FILE = "E:\\Traffic_Simulation\\snow_plow_project\\net\\core_withshape_with_light_changing.net.xml"
-OUTPUT_JSON = "snowplow_baseline_time_steps_record.json"
+
+def load_config(config_path='config.json'):
+    """加载配置文件"""
+    with open(config_path, 'r', encoding='utf-8') as f:
+        return json.load(f)
 
 def get_all_edges(net_file):
     """获取路网中所有边的ID"""
@@ -70,6 +72,19 @@ def generate_baseline_record(all_edges, time_points_hours=[0, 1, 2, 3, 4, 5]):
     return record
 
 def main():
+    import argparse
+    parser = argparse.ArgumentParser(description='生成Baseline扫雪策略记录')
+    parser.add_argument('-c', '--config', default='config.json',
+                       help='配置文件路径 (默认: config.json)')
+    args = parser.parse_args()
+    
+    # 加载配置
+    config = load_config(args.config)
+    NET_FILE = config['network']['net_file']
+    OUTPUT_DIR = Path(config['output']['base_dir'])
+    OUTPUT_DIR.mkdir(exist_ok=True)
+    OUTPUT_JSON = OUTPUT_DIR / "snowplow_baseline_time_steps_record.json"
+    
     print("="*60)
     print("生成Baseline扫雪策略记录".center(60))
     print("="*60)
@@ -81,7 +96,8 @@ def main():
     
     # 生成baseline记录
     print("\n正在生成baseline记录...")
-    baseline_record = generate_baseline_record(all_edges)
+    evaluation_hours = config['sumo_config']['evaluation_hours']
+    baseline_record = generate_baseline_record(all_edges, evaluation_hours)
     print(f"  生成 {len(baseline_record)} 个时间步记录")
     
     # 保存JSON

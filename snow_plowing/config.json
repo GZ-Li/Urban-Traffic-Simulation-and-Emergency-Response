@@ -1,0 +1,69 @@
+{
+  "description": "扫雪策略仿真配置文件",
+  "version": "1.0",
+  
+  "network": {
+    "net_file": "E:\\Traffic_Simulation\\snow_plow_project\\net\\core_withshape_with_light_changing.net.xml",
+    "regions_file": "regions.json",
+    "description": "SUMO路网文件路径，区域配置见regions.json"
+  },
+  
+  "snowplow": {
+    "num_trucks": 5,
+    "speed_kmh": 25,
+    "speed_ms": 6.944,
+    "cleaning_rate_per_lane": 0.015,
+    "description": "扫雪车参数：5辆车，时速25km/h，每车道清扫率0.015"
+  },
+  
+  "road_parameters": {
+    "cleaned": {
+      "accel": 2.6,
+      "decel": 4.5,
+      "max_speed": 33,
+      "min_gap": 2.5,
+      "description": "已清扫道路的车辆参数（正常道路）"
+    },
+    "unclean": {
+      "accel": 1.5,
+      "decel": 2.5,
+      "max_speed": 4,
+      "min_gap": 4,
+      "description": "未清扫道路的车辆参数（积雪道路）"
+    }
+  },
+  
+  "sumo_config": {
+    "config_file": "E:\\Traffic_Simulation\\Adverse_weather_traffic\\Core_500m_test.sumocfg",
+    "config_file_scaled": "E:\\Traffic_Simulation\\Adverse_weather_traffic\\Core_500m_test_0.1.sumocfg",
+    "use_scaled": true,
+    "simulation_steps": 200,
+    "evaluation_hours": [0, 1, 2, 3, 4, 5],
+    "description": "SUMO仿真配置，use_scaled=true使用10%缩减版流量"
+  },
+  
+  "traffic_data": {
+    "route_file": "E:\\Traffic_Simulation\\Adverse_weather_traffic\\rou\\mapcore_500m_core_withshape_with_light_test_normal.rou.xml",
+    "description": "交通流量数据文件，用于计算道路权重"
+  },
+  
+  "strategy": {
+    "name": "greedy_traffic_flow",
+    "description": "基于交通流量的贪心策略",
+    "parameters": {
+      "use_traffic_weight": true,
+      "penalty_time_minutes": 5,
+      "max_no_path_retries": 10,
+      "description": "策略参数：使用交通流量权重，传送惩罚5分钟"
+    }
+  },
+  
+  "output": {
+    "base_dir": "results",
+    "strategy_record": "snowplow_strategy_record.json",
+    "evaluation_results": "sumo_evaluation_results.json",
+    "visualization_gif": "snowplow_animation.gif",
+    "time_step_interval_minutes": 30,
+    "description": "输出文件配置，每30分钟记录一次清扫状态"
+  }
+}

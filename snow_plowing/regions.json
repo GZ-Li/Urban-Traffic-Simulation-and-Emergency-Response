@@ -1,0 +1,58 @@
+{
+  "description": "区域划分配置文件",
+  "version": "1.0",
+  
+  "regions": {
+    "region1": {
+      "name": "区域1",
+      "min_x": 7500,
+      "min_y": -36.63,
+      "max_x": 12469.37,
+      "max_y": 2000,
+      "start_edge": "200082260",
+      "color": "red",
+      "description": "东南区域"
+    },
+    "region2": {
+      "name": "区域2",
+      "min_x": 7500,
+      "min_y": 2000,
+      "max_x": 12611.07,
+      "max_y": 4702.42,
+      "start_edge": "200063744",
+      "color": "blue",
+      "description": "东北区域"
+    },
+    "region3": {
+      "name": "区域3",
+      "min_x": -355.68,
+      "min_y": 2500,
+      "max_x": 4785.48,
+      "max_y": 7506.39,
+      "start_edge": "200062113",
+      "color": "green",
+      "description": "西北区域"
+    },
+    "region4": {
+      "name": "区域4",
+      "min_x": -153.18,
+      "min_y": -244.72,
+      "max_x": 5500,
+      "max_y": 2500,
+      "start_edge": "200001452",
+      "color": "orange",
+      "description": "西南区域"
+    },
+    "region5": {
+      "name": "区域5",
+      "start_edge": "200063754",
+      "color": "purple",
+      "description": "其他区域（region1-4外的所有道路）"
+    }
+  },
+  
+  "region_assignment": {
+    "method": "center_point",
+    "description": "根据道路中心点坐标分配区域，未匹配的归入region5"
+  }
+}

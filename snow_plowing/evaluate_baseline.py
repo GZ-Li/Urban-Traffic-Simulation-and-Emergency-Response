@@ -9,27 +9,13 @@ import traci
 import matplotlib.pyplot as plt
 import numpy as np
 from collections import defaultdict
+from pathlib import Path
 
-# 配置文件路径
-SUMO_CONFIG = "E:\\Traffic_Simulation\\Adverse_weather_traffic\\Core_500m_test.sumocfg"
-SUMO_CONFIG_SCALED = "E:\\Traffic_Simulation\\Adverse_weather_traffic\\Core_500m_test_0.1.sumocfg"
-JSON_RECORD = "snowplow_baseline_time_steps_record.json"
-OUTPUT_JSON = "sumo_evaluation_baseline_results.json"
 
-# 清扫道路和未清扫道路的参数（与原脚本完全一致）
-CLEANED_PARAMS = {
-    "accel": 2.6,
-    "decel": 4.5,
-    "max_speed": 33,
-    "min_gap": 2.5
-}
-
-UNCLEAN_PARAMS = {
-    "accel": 1.5,
-    "decel": 2.5,
-    "max_speed": 4,
-    "min_gap": 4
-}
+def load_config(config_path='config.json'):
+    """加载配置文件"""
+    with open(config_path, 'r', encoding='utf-8') as f:
+        return json.load(f)
 
 def load_time_step_records(json_path):
     """加载时间步清扫记录"""
@@ -188,17 +174,125 @@ def plot_results(results):
     plt.close()
 
 if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser(description='Baseline扫雪策略SUMO评测')
+    parser.add_argument('-c', '--config', default='config.json',
+                       help='配置文件路径 (默认: config.json)')
+    args = parser.parse_args()
+    
+    # 加载配置
+    config = load_config(args.config)
+    
+    # 配置参数
+    use_scaled = config['sumo_config']['use_scaled']
+    SUMO_CONFIG = config['sumo_config']['config_file_scaled' if use_scaled else 'config_file']
+    simulation_steps = config['sumo_config']['simulation_steps']
+    evaluation_hours = config['sumo_config']['evaluation_hours']
+    
+    CLEANED_PARAMS = config['road_parameters']['cleaned']
+    UNCLEAN_PARAMS = config['road_parameters']['unclean']
+    
+    OUTPUT_DIR = Path(config['output']['base_dir'])
+    OUTPUT_DIR.mkdir(exist_ok=True)
+    JSON_RECORD = OUTPUT_DIR / "snowplow_baseline_time_steps_record.json"
+    OUTPUT_JSON = OUTPUT_DIR / "sumo_evaluation_baseline_results.json"
+    
     print("="*70)
     print("Baseline扫雪策略SUMO评测".center(70))
     print("="*70)
     
+    # 重新定义需要使用配置的函数
+    def load_time_step_records(json_path):
+        with open(json_path, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    
+    def get_cleaned_edges_at_time(records, time_minutes):
+        time_steps = []
+        for key, value in records.items():
+            time_steps.append((value['time_minutes'], key))
+        time_steps.sort()
+        target_key = None
+        for t_min, key in time_steps:
+            if t_min <= time_minutes:
+                target_key = key
+            else:
+                break
+        if target_key is None:
+            return set()
+        return set(records[target_key]['total_cleaned_edges'])
+    
+    def run_sumo_evaluation_with_config(time_points_hours, simulation_steps, sumo_config):
+        records = load_time_step_records(JSON_RECORD)
+        results = {}
+        for hour in time_points_hours:
+            print(f"\n{'='*60}")
+            print(f"开始评测第 {hour} 小时的Baseline场景...")
+            print(f"{'='*60}")
+            time_minutes = hour * 60
+            cleaned_edges = get_cleaned_edges_at_time(records, time_minutes)
+            print(f"已清扫道路数量: {len(cleaned_edges)} (baseline: 全部)")
+            traci.start(["sumo", "-c", sumo_config, "--start", "--no-warnings", "true"])
+            for step in range(simulation_steps):
+                traci.simulationStep()
+                current_vehicles = traci.vehicle.getIDList()
+                for veh_id in current_vehicles:
+                    traci.vehicle.setAcceleration(veh_id, CLEANED_PARAMS["accel"], 1)
+                    traci.vehicle.setDecel(veh_id, CLEANED_PARAMS["decel"])
+                    traci.vehicle.setMaxSpeed(veh_id, CLEANED_PARAMS["max_speed"])
+                    traci.vehicle.setMinGap(veh_id, CLEANED_PARAMS["min_gap"])
+                if (step + 1) % 50 == 0:
+                    print(f"  仿真进度: {step + 1}/{simulation_steps} 步, 当前车辆数: {len(current_vehicles)}")
+            current_vehicles = traci.vehicle.getIDList()
+            num_vehicles = len(current_vehicles)
+            if num_vehicles > 0:
+                total_speed = sum(traci.vehicle.getSpeed(veh) for veh in current_vehicles)
+                global_avg_speed = total_speed / num_vehicles
+            else:
+                global_avg_speed = 0
+            print(f"\n  仿真完成 - 第{simulation_steps}步统计:")
+            print(f"    车辆数: {num_vehicles}")
+            print(f"    全局平均速度: {global_avg_speed:.2f} m/s ({global_avg_speed * 3.6:.2f} km/h)")
+            traci.close()
+            results[f"hour_{hour}"] = {
+                "time_hours": hour,
+                "time_minutes": time_minutes,
+                "num_cleaned_edges": len(cleaned_edges),
+                "simulation_steps": simulation_steps,
+                "num_vehicles": num_vehicles,
+                "global_avg_speed": global_avg_speed
+            }
+        return results
+    
+    def save_results(results, output_path):
+        with open(output_path, 'w', encoding='utf-8') as f:
+            json.dump(results, f, indent=2, ensure_ascii=False)
+        print(f"\n评估结果已保存至: {output_path}")
+    
+    def plot_results(results):
+        hours = []
+        speeds = []
+        for key in sorted(results.keys()):
+            hour_data = results[key]
+            hours.append(hour_data['time_hours'])
+            speeds.append(hour_data['global_avg_speed'])
+        plt.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei']
+        plt.rcParams['axes.unicode_minus'] = False
+        fig, ax1 = plt.subplots(figsize=(12, 7))
+        ax1.plot(hours, speeds, marker='o', linewidth=3, markersize=10, color='tab:blue', label='Baseline平均速度')
+        ax1.set_xlabel('时间（小时）', fontsize=14)
+        ax1.set_ylabel('全局平均速度 (m/s)', fontsize=14)
+        ax1.grid(True, alpha=0.3, linestyle='--')
+        ax1.legend(loc='upper left', fontsize=12)
+        plt.title('Baseline场景（所有道路已清扫）的全局平均速度', fontsize=16, fontweight='bold', pad=20)
+        plt.tight_layout()
+        plot_file = OUTPUT_DIR / 'sumo_evaluation_baseline_speed_plot.png'
+        plt.savefig(plot_file, dpi=100, bbox_inches='tight')
+        print(f"图表已保存至: {plot_file}")
+        plt.close()
+    
     # 运行评测
-    results = run_sumo_evaluation(time_points_hours=[0, 1, 2, 3, 4, 5], simulation_steps=200, use_scaled=True)
-    
-    # 保存结果
+    results = run_sumo_evaluation_with_config(evaluation_hours, simulation_steps, SUMO_CONFIG)
     save_results(results, OUTPUT_JSON)
-    
-    # 绘图
     plot_results(results)
     
     print("\n" + "="*70)
