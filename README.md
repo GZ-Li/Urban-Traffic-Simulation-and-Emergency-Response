@@ -7,21 +7,124 @@
 ### 1. 城市交通高峰模拟
 **路径**: `Peak_Hour_Traffic_Simulation/`
 
-（项目开发中）
+基于 OD 矩阵的微观交通流生成系统，将宏观的交通需求矩阵映射为微观路网的车辆生成参数。
+
+#### 核心功能
+- **OD 矩阵解析**: 读取区域间的交通流量需求
+- **车道映射**: 建立交通小区（TAZ）与路网车道（Lane）的对应关系
+- **加权采样**: 基于流量权重的随机采样，替代均匀分布
+- **微观轨迹生成**: 生成符合宏观 OD 特征的车辆行程数据
+
+#### 算法原理
+将默认的均匀采样概率修改为加权采样：
+
+$$P_{weighted}(l_i) = \frac{w_i}{\sum_{j \in L} w_j}$$
+
+其中 $w_i$ 是根据 OD 矩阵推算的车道流量权重。
+
+#### 技术方案
+- 修改 `mosstool/trip/generator/random.py` 的 `_rand_position` 函数
+- 使用 `random.choices(lanes, weights=weights)` 进行加权采样
+- 使高流量区域的车道更容易被选为起点/终点
+
+#### 项目结构
+```
+Peak_Hour_Traffic_Simulation/
+├── peak.md                     # 技术方案说明
+└── Readme.md
+```
+
+#### 状态
+- **部署状态**: Pending (待部署)
+- **原因**: 当前环境尚未提供完整的 OD 数据接口模块
+- **计划**: 代码注入方案已拟定，待环境更新后上线
 
 ---
 
 ### 2. 高峰期道路资源优化
 **路径**: `Traffic_Optimization/`
 
-（项目开发中）
+基于 MaxPressure 算法的信号灯固定配时方案生成系统，采用"动态生成-静态固化"策略。
+
+#### 核心功能
+- **动态策略生成**: 运行 MaxPressure 算法，实时计算各相位压力
+- **静态配时固化**: 统计相位运行时长占比，生成固定配时方案
+- **策略验证**: 对比 Webster 基准方案，评估优化效果
+- **标准化输出**: 生成可部署的静态配时表（JSON 格式）
+
+#### 算法原理
+基于压力的贪心优化：
+
+$$Pressure(Phase_i) = \sum_{l \in Incoming} w_l \cdot q_l - \sum_{l \in Outgoing} w_l \cdot q_l$$
+
+**目标**: 最小化全网总压力 $\sum |Pressure|$
+
+#### 优化流程
+1. **阶段1 - 策略生成**: 运行 MaxPressure 动态控制，统计各相位累计运行时长
+2. **阶段2 - 策略验证**: 加载固定配时方案，运行仿真并与 Webster 方案对比
+
+#### 项目结构
+```
+Traffic_Optimization/
+├── opti.md                           # 技术方案说明
+├── run_mp_fixed.sh                   # 主启动脚本
+├── run_simulation.py                 # 仿真运行器
+├── max_pressure.py                   # MaxPressure 核心算法
+└── output/
+    ├── fixed_timing_from_mp.json    # 配时方案
+    └── metrics.json                  # 评估指标
+```
+
+#### 测试结果
+| Case | 方法 | 平均速度 | 平均旅行时间 | 排队长度 |
+|------|------|---------|------------|---------|
+| case1 | Webster (Baseline) | 12.64 | **198.94** | **0.009** |
+| case1 | MaxPressure | **12.63** | 203.30 | 0.010 |
 
 ---
 
 ### 3. 公交车利用率提升
 **路径**: `Bus_Utility_Optimization/`
 
-（项目开发中）
+基于加权 MaxPressure 算法的公交优先信号控制系统，通过调整车辆类型权重提升公交通行效率。
+
+#### 核心功能
+- **多模态感知**: 区分车道上的公交车辆与社会车辆
+- **加权压力计算**: 为公交车辆赋予更高权重（如 2.0-5.0）
+- **方案固化**: 生成标准信号机配时表（JSON 格式）
+- **效能验证**: 评估公交利用率提升效果
+
+#### 算法原理
+加权压力最大化模型：
+
+$$Pressure(p) = \sum_{l \in Incoming(p)} (W_{bus} \cdot N_{bus}^l + W_{car} \cdot N_{car}^l) - \sum_{l \in Outgoing(p)} (W_{bus} \cdot N_{bus}^l + W_{car} \cdot N_{car}^l)$$
+
+其中：
+- $W_{bus}$: 公交权重系数（通常 > 1.0，如 2.0）
+- $W_{car}$: 社会车辆权重系数（通常 = 1.0）
+- $N_{bus}^l, N_{car}^l$: 车道上的公交车和社会车辆数量
+
+#### 关键配置
+- `bus_weight_alpha`: 公交权重系数（推荐 2.0-5.0）
+- `bus_speed_threshold`: 判定公交延误的速度阈值
+- `min_phase_seconds`: 最小相位时长，防止频繁切换
+
+#### 项目结构
+```
+Bus_Utility_Optimization/
+├── bus.md                            # 技术方案说明
+├── Readme.md
+└── output/
+    └── fixed_timing_bus_weighted_mp.json  # 公交优先配时方案
+```
+
+#### 测试结果
+| Case | 方法 | 平均速度（m/s） | 公交利用率 | 拥堵程度 |
+|------|------|----------------|-----------|---------|
+| Case 1 | Webster (Baseline) | **12.71** | 20.9% | 0.0114 |
+| Case 1 | BusWeighted MP | 12.69 | **26.7%** | **0.0108** |
+
+**结论**: 公交利用率相对提升 **30%**，且未对整体路网拥堵造成负面影响
 
 ---
 
