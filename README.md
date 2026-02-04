@@ -209,23 +209,30 @@ python evaluate_strategies.py
 
 ---
 
-### 6. 单点事故应急响应
+### 6. 交通事故应急响应优化
 **路径**: `Emergency_Response_Optimization/`
 
-基于匈牙利算法的交通事故应急响应优化系统，为多个医院和事故点分配最优救护车路径。
+基于优化算法的交通事故应急响应系统，支持单点和多点事故场景，为医院和事故点分配最优救护车路径。
 
 #### 核心功能
 - **路径规划**: 使用 Dijkstra 算法计算救护车从医院到事故点的最优路径
-- **优化分配**: 将问题建模为任务分配问题 (Min-Max Assignment)，最小化最大响应时间
+- **单点优化**: 匈牙利算法求解单个事故点的最优救护车分配
+- **多点优化**: 扩展算法处理多个并发事故点的资源调度
 - **算法对比**: 对比最优算法与贪心算法的性能差异
 - **可视化**: 生成分配方案对比图和路网地图
 - **SUMO 仿真**: 基于 SUMO 平台进行实际验证
 
+#### 应用场景
+- **单点事故**: 单个交通事故点需要多辆救护车
+- **多点事故**: 多个并发事故点的协同调度
+- **应急预案**: 评估不同医院配置方案的响应能力
+
 #### 算法优势
 相比贪心算法，最优算法可以：
-- 减少最大响应时间
+- 减少最大响应时间（关键指标）
 - 实现更均衡的医院资源利用
 - 保证全局最优解
+- 支持多事故点并发处理
 
 #### 项目结构
 ```
@@ -233,20 +240,28 @@ Emergency_Response_Optimization/
 ├── src/
 │   ├── path_planning.py            # 路径规划（Dijkstra）
 │   ├── optimization.py             # 优化算法（匈牙利算法）
+│   ├── multi_point_optimization.py # 多点事故优化
 │   ├── visualization.py            # 可视化
 │   └── sumo_simulation.py          # SUMO 仿真接口
 ├── data/
 │   ├── Hospital_Location.csv       # 医院位置
-│   ├── cases.txt                   # 测试案例
+│   ├── cases.txt                   # 单点测试案例
+│   ├── multi_cases.txt             # 多点测试案例
 │   └── new_add_light.net.xml       # 路网文件
-├── run_single_experiment.py        # 单次实验工具
+├── run_single_experiment.py        # 单点事故实验
+├── run_multi_experiment.py         # 多点事故实验
 └── results/                        # 实验结果
 ```
 
 #### 快速开始
 ```bash
 cd Emergency_Response_Optimization
+
+# 单点事故场景
 python run_single_experiment.py
+
+# 多点事故场景
+python run_multi_experiment.py
 ```
 
 #### 依赖
@@ -257,12 +272,7 @@ python run_single_experiment.py
 
 ---
 
-### 7. 多点事故应急响应
-**路径**: （项目开发中）
-
----
-
-### 8. 马拉松路线规划
+### 7. 马拉松路线规划
 **路径**: `optim_route/`
 
 基于 OR-Tools 和遗传算法的多约束路线规划系统，支持 OSM 和 SUMO Net 两种路网格式。
@@ -325,7 +335,7 @@ uv run python run_wuhan_net.py \
 
 ---
 
-### 9. 定点赛事人流疏散
+### 8. 定点赛事人流疏散
 **路径**: `concert_evacuation/`
 
 （项目开发中）
