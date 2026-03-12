@@ -1,0 +1,20 @@
+python3 /home/nkk/work/src/python/run_incremental.py \
+  --task bus_opt \
+  --scenario bus_weighted_mp_fixed \
+  --add_bus_count 30 \
+  --bus_speed_threshold 5.0 \
+  --bus_weight_alpha 2.0 \
+  --cycle_seconds 90 \
+  --min_green_seconds 30 \
+  --mp_warmup_cycles 1 \
+  --mp_collect_cycles 10 \
+  --min_phase_seconds 15 \
+  --mongo_uri mongodb://root:qZ7ILv0Xs6VnJcPg12KU3AoYhWKb4Cla@172.16.40.166:27017 \
+  --map_db tsingroc \
+  --map_coll map_pku_wuhan_demo_1015c_rl \
+  --agent_db tsingroc \
+  --agent_coll person_test_20250724_1015cc \
+  --total_steps 120 \
+  --interval 30 \
+  --output_sql_dsn postgres://postgres:QSo084HA7Sji9jsm73KjRUcTGWynUsxu@172.16.40.166:5432/simulation \
+  --output_bbox 114,30.3,115,30.7
