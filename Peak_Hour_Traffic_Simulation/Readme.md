@@ -1,83 +1,112 @@
-# Peak Hour Traffic Simulation Based on OD Matrix
+# 基于 OD 矩阵的城市交通高峰模拟
 
-A microscopic traffic flow generation system based on OD (Origin-Destination) matrices, mapping macroscopic traffic demand to microscopic vehicle generation parameters.
+基于 OD（Origin-Destination）矩阵的微观交通流生成系统，将宏观的交通需求矩阵映射为微观路网的车辆生成参数。
 
-## Project Overview
+## 项目简介
 
-This project generates realistic peak-hour traffic patterns by transforming macroscopic OD matrix data into microscopic vehicle trip data. Instead of uniform random sampling, it uses weighted sampling based on traffic flow to create more realistic traffic distributions.
+本项目通过将宏观 OD 矩阵数据转化为微观车辆行程数据，生成真实的高峰期交通模式。使用基于交通流量的加权采样替代均匀随机采样，创建更真实的交通分布。
 
-## Features
+## 核心功能
 
-- **OD Matrix Parsing**: Read inter-regional traffic flow demand matrices
-- **Lane Mapping**: Establish correspondence between Traffic Analysis Zones (TAZ) and network lanes
-- **Weighted Sampling**: Flow-weight-based random sampling, replacing uniform distribution
-- **Microscopic Trajectory Generation**: Generate vehicle trips that conform to macroscopic OD characteristics
+- **OD 矩阵解析**：读取区域间的交通流量需求
+- **车道映射**：建立交通小区（TAZ）与路网车道（Lane）的对应关系
+- **加权采样**：基于流量权重的随机采样，替代均匀分布
+- **微观轨迹生成**：生成符合宏观 OD 特征的车辆行程数据
 
-## Algorithm
+## 算法原理
 
-### Weighted Sampling Approach
+### 加权采样方法
 
-Replace the default uniform sampling probability with weighted sampling:
+将默认的均匀采样概率修改为加权采样：
 
 $$P_{weighted}(l_i) = \frac{w_i}{\sum_{j \in L} w_j}$$
 
-Where $w_i$ is the lane flow weight derived from the OD matrix.
+其中 $w_i$ 是根据 OD 矩阵推算的车道流量权重。
 
-### Technical Implementation
+### 技术实现方案
 
-- Modify `mosstool/trip/generator/random.py` `_rand_position` function
-- Use `random.choices(lanes, weights=weights)` for weighted sampling
-- High-flow regions' lanes are more likely to be selected as trip origins/destinations
+- 修改 `mosstool/trip/generator/random.py` 的 `_rand_position` 函数
+- 使用 `random.choices(lanes, weights=weights)` 进行加权采样
+- 使高流量区域的车道更容易被选为起点/终点
 
-## Project Structure
+## 项目结构
 
 ```
 Peak_Hour_Traffic_Simulation/
-├── README.md                     # This file
-├── README_CN.md                  # Chinese documentation
+├── README.md                     # 英文说明文档
+├── README_CN.md                  # 中文说明文档（本文件）
 └── docs/
-    └── technical_design.md       # Detailed technical design document
+    └── technical_design.md       # 详细技术设计文档
 ```
 
-## Current Status
+## 当前状态
 
-- **Deployment Status**: Pending
-- **Reason**: The current environment has not yet provided the complete OD data interface module
-- **Plan**: The code injection approach has been drafted and will be deployed once the environment is updated
+- **部署状态**：Pending（待部署）
+- **原因**：当前环境尚未提供完整的 OD 数据接口模块
+- **计划**：代码注入方案已拟定，待环境更新后上线
 
-## Workflow Design
+## 工作流程设计
 
-### Data Flow
+### 数据流
 
 ```
-OD Matrix (macroscopic)
+OD 矩阵（宏观需求）
     │
     ▼
-TAZ-to-Lane Mapping
+TAZ-车道映射
     │
     ▼
-Lane Flow Weight Calculation
+车道流量权重计算
     │
     ▼
-Weighted Random Sampling
+加权随机采样
     │
     ▼
-Microscopic Vehicle Trips
+微观车辆行程数据
 ```
 
-### Integration Points
+### 集成接入点
 
-1. **Input**: OD matrix data from traffic survey or model
-2. **Processing**: Weight calculation and sampling modification in `mosstool`
-3. **Output**: Vehicle trip data compatible with SUMO/custom simulator
+1. **输入**：来自交通调查或模型的 OD 矩阵数据
+2. **处理**：在 `mosstool` 中修改权重计算和采样逻辑
+3. **输出**：兼容 SUMO/自研仿真器的车辆行程数据
 
-## Dependencies
+## 核心代码修改说明
+
+### 修改位置
+
+`mosstool/trip/generator/random.py` 中的 `_rand_position` 函数
+
+### 修改前（均匀采样）
+
+```python
+lane = random.choice(lanes)  # 均匀分布
+```
+
+### 修改后（加权采样）
+
+```python
+lane = random.choices(lanes, weights=weights, k=1)[0]  # 基于OD的加权分布
+```
+
+### 权重计算
+
+```python
+# 从OD矩阵推算各车道的流量权重
+for taz_id, lanes in taz_lane_mapping.items():
+    flow = od_matrix.get_flow(origin=taz_id)  # 获取该TAZ的出发流量
+    weight_per_lane = flow / len(lanes)         # 均分到各车道
+    for lane in lanes:
+        weights[lane] = weight_per_lane
+```
+
+## 依赖
 
 - Python 3.8+
-- mosstool (traffic simulation toolkit)
+- mosstool（交通仿真工具包）
 - numpy
 
-## References
+## 参考
 
-- OD Matrix theory and traffic demand modeling
-- mosstool framework documentation
+- OD 矩阵理论与交通需求建模
+- mosstool 框架文档
